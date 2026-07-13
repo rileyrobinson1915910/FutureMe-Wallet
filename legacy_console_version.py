@@ -1,3 +1,4 @@
+
 name = input("What name would you like us to use? ")
 age = int(input(f"{name}, what is your age? "))
 income = float(input(f"{name}, what is your weekly income? $"))
@@ -119,3 +120,4 @@ if savings_goals_calc_quest.lower() == "yes":
         print(f"Current Savings: ${savings:.2f}")
         print(f"Necessary Savings: ${goal_acc:.2f}")
         print(f"Savings Difference: ${goal_diff:.2f}")
+
