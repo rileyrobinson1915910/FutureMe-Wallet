@@ -33,3 +33,17 @@ print(cursor.fetchall())
 connection.commit()
 
 connection.close()
+
+cursor.execute("UPDATE user_info SET age = ? WHERE name = 'result'")
+
+result = cursor.fetchone()
+
+def age_name_update(name):
+    if name == 'result':
+        answer = print("result already detected, would you like to ovverride with new info? Y/N")
+    if answer == "Y":
+        cursor.execute("UPDATE user_info SET age = ? WHERE name = 'result'")
+    else:
+       cursor.execute("INSERT INTO user_info VALUES (?)", (result,))
+ 
+
