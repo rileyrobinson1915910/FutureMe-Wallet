@@ -4,9 +4,9 @@ Why I built this:
 
 I noticed a gap, most financial literacy apps show you a snapshot of where your money is right now, however I recognized that if you can simulate where you're going it is much easier for you interact and stick with your goals because you can almost see the future and how the decision you are about to make will impact you in 10 years.
 
-I grew up hearing my parents, one of whom is an immigrant speak about financial literacy and how they had no clue what savings, budgeting, and investing even were until well into adulthood. Education and technology have come a long ways since my parents were kids, however my friends show the same story my parents lived 40 years ago about financial literacy. School curriculums haven't caught up to how complicated managing money has become; kids are expected to navigate credit, digital banking, and investing with essentially no formal education on any of it.
+I grew up hearing my parents, one of whom is an immigrant, speak about financial literacy and how they had no clue what savings, budgeting, and investing even were until they were well into adulthood. Education and technology have come a long ways since my parents were kids, however my friends portray the same story my parents lived 40 years ago revolving around financial literacy. School curriculums haven't caught up to how complicated managing money has become; kids are expected to navigate credit, digital banking, and investing with essentially no formal education on any of it.
 
-FutureMe Wallet is my attempt at closing a small piece of that gap, it's a tool simple enough that it could've actually helped my own family, and help my friends, understand where their money is going before they're adults making real financial decisions with no foundation.
+FutureMe Wallet is my attempt at closing a small piece of that gap, it's a tool simple enough that it could've actually helped my own family, and help my friends understand where their money is going before they're adults making real financial decisions with no foundation.
 
 What it does:
 Collects a few basic financial habits (income, savings, spending)

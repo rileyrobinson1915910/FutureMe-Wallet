@@ -1,0 +1,40 @@
+import sqlite3
+
+
+def get_connection():
+    connection = sqlite3.connect('users_name.db')
+    cursor = connection.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_info (
+            name TEXT PRIMARY KEY,
+            age INTEGER,
+            income REAL,
+            savings REAL,
+            spending REAL
+        )
+    """)
+    connection.commit()
+    return connection, cursor
+
+
+def get_user(cursor, name):
+    cursor.execute(
+        "SELECT name, age, income, savings, spending FROM user_info WHERE name = ?",
+        (name,)
+    )
+    return cursor.fetchone()
+
+
+def insert_user(cursor, connection, name, age, income, savings, spending):
+    cursor.execute(
+        "INSERT INTO user_info VALUES (?, ?, ?, ?, ?)",
+        (name, age, income, savings, spending)
+    )
+    connection.commit()
+
+
+def update_user_field(cursor, connection, name, field, new_value):
+    # field must be one of: age, income, savings, spending
+    query = f"UPDATE user_info SET {field} = ? WHERE name = ?"
+    cursor.execute(query, (new_value, name))
+    connection.commit()

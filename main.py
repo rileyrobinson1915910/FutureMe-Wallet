@@ -1,45 +1,83 @@
 import streamlit as st
 from calculations import calculate_future, core_calculations, health_score
 from messages import health_score_basic, score_system, financial_health_score_full
+from database import get_connection, get_user, insert_user, update_user_field
 
 st.set_page_config(page_title="Future Me Wallet", page_icon="💰", layout="centered")
+
+connection, cursor = get_connection()
 
 st.title("💰 Future Me Wallet")
 st.write("Let's start with a few questions.")
 
-if "show_goal_calc" not in st.session_state:
-    st.session_state.show_goal_calc = False
-
 name = st.text_input("What name would you like us to use?")
 
-age = None
+age = income = savings = spending = None
+existing_user = None
+
 if name:
+    existing_user = get_user(cursor, name)
+
+# ---------- RETURNING USER ----------
+if existing_user is not None:
+    _, saved_age, saved_income, saved_savings, saved_spending = existing_user
+
+    st.success(f"Welcome back, {name}!")
+
+    c1, c2 = st.columns(2)
+    c1.metric("Age", saved_age)
+    c2.metric("Income", f"${saved_income:,.2f}")
+    c3, c4 = st.columns(2)
+    c3.metric("Savings", f"${saved_savings:,.2f}")
+    c4.metric("Spending", f"${saved_spending:,.2f}")
+
+    st.divider()
+    st.subheader("Update your info")
+
+    field_choice = st.selectbox(
+        "Would you like to update a field?",
+        ["No", "Age", "Income", "Savings", "Spending"]
+    )
+
+    if field_choice != "No":
+        new_value = st.number_input(f"New {field_choice.lower()}", min_value=0.0, value=None)
+        if new_value is not None and st.button("Save update"):
+            column_map = {"Age": "age", "Income": "income", "Savings": "savings", "Spending": "spending"}
+            update_user_field(cursor, connection, name, column_map[field_choice], new_value)
+            st.success(f"{field_choice} updated! Refresh the page to see your new results below.")
+
+    age, income, savings, spending = saved_age, saved_income, saved_savings, saved_spending
+
+# ---------- NEW USER ----------
+elif name:
     age = st.number_input(
         f"{name}, what is your age?",
         min_value=0, step=1, value=None, placeholder="Enter your age",
     )
 
-income = None
-if age is not None:
-    income = st.number_input(
-        f"{name}, what is your weekly income?",
-        min_value=0.0, value=None, placeholder="Enter weekly income ($)",
-    )
+    if age is not None:
+        income = st.number_input(
+            f"{name}, what is your weekly income?",
+            min_value=0.0, value=None, placeholder="Enter weekly income ($)",
+        )
 
-savings = None
-if income is not None:
-    savings = st.number_input(
-        f"{name}, what are your weekly savings?",
-        min_value=0.0, value=None, placeholder="Enter weekly savings ($)",
-    )
+    if income is not None:
+        savings = st.number_input(
+            f"{name}, what are your weekly savings?",
+            min_value=0.0, value=None, placeholder="Enter weekly savings ($)",
+        )
 
-spending = None
-if savings is not None:
-    spending = st.number_input(
-        f"{name}, what is your weekly spending?",
-        min_value=0.0, value=None, placeholder="Enter weekly spending ($)",
-    )
+    if savings is not None:
+        spending = st.number_input(
+            f"{name}, what is your weekly spending?",
+            min_value=0.0, value=None, placeholder="Enter weekly spending ($)",
+        )
 
+    if spending is not None:
+        insert_user(cursor, connection, name, age, income, savings, spending)
+        st.success("New record saved!")
+
+# ---------- RESULTS (shown for both new and returning users, once data is ready) ----------
 if spending is not None:
 
     age_five, age_ten = calculate_future(age)
@@ -101,67 +139,4 @@ if spending is not None:
         elif category == "Bad":
             st.warning("Small changes now could save thousands over time.")
 
-    st.divider()
-    st.subheader("🎯 Savings Goal Calculator")
-
-    savings_goals_calc_quest = st.selectbox(
-        "Would you like to try our Savings Goal Calculator?",
-        ["No", "Yes"],
-    )
-    st.session_state.show_goal_calc = savings_goals_calc_quest == "Yes"
-
-    if st.session_state.show_goal_calc:
-
-        goal = st.number_input(
-            "What is your desired amount of money?",
-            min_value=0.0, value=None, placeholder="Enter your goal amount ($)",
-        )
-
-        weeks = None
-        if goal is not None:
-            weeks = st.number_input(
-                "In how many weeks do you want to accomplish this goal?",
-                min_value=1, step=1, value=None, placeholder="Enter number of weeks",
-            )
-
-        if weeks is not None:
-            goal_acc = goal / weeks
-            short_acc = goal / savings if savings > 0 else 0
-
-            st.write(
-                f"In order to reach your goal of ${goal:,.2f}, you need to save "
-                f"${goal_acc:,.2f} per week to accomplish your goal in {weeks} weeks."
-            )
-
-            if savings > 0 and goal_acc < savings:
-                st.success(f"Great job! You are on track to accomplish your goal of ${goal:,.2f}.")
-                st.write(
-                    f"At this current rate, you will complete your goal in approximately "
-                    f"{short_acc:.1f} weeks."
-                )
-            elif savings > 0 and goal_acc == savings:
-                st.info(f"Good job! At this rate, you are on track to accomplish your goal of ${goal:,.2f}.")
-                st.write("You're already saving exactly what you need — no extra cuts required.")
-            else:
-                st.error(f"You are not on track to accomplish your goal of ${goal:,.2f}.")
-
-                gap = goal_acc - savings
-                st.write(
-                    f"Challenge: Cut your spending by ${gap:,.2f} per week to bring your "
-                    f"savings up to ${goal_acc:,.2f}/week and hit your goal in {weeks} weeks."
-                )
-
-                easier_cut = gap / 2
-                new_savings_easier = savings + easier_cut
-                if new_savings_easier > 0:
-                    easier_weeks = goal / new_savings_easier
-                    st.write(
-                        f"Prefer a lighter lift? Cut spending by just ${easier_cut:,.2f} per "
-                        f"week instead, and you'd reach your goal in about {easier_weeks:.1f} "
-                        f"weeks."
-                    )
-
-                c1, c2, c3 = st.columns(3)
-                c1.metric("Current Savings", f"${savings:,.2f}")
-                c2.metric("Necessary Savings", f"${goal_acc:,.2f}")
-                c3.metric("Difference", f"${gap:,.2f}")
+connection.close()
