@@ -25,11 +25,11 @@ def health_score_basic(spending, savings):
 print(health_score_basic(spending, savings))
 
 
-def core_calculations(spending, savings, income):
+def core_calculations(income, spending, savings):
     return income * 52, spending * 52, savings * 52
 
 
-yearly_income, yearly_spending, yearly_savings = core_calculations(spending, savings, income)
+yearly_income, yearly_spending, yearly_savings = core_calculations(income, spending, savings)
 
 print(f"Yearly Income: ${yearly_income:.2f}")
 print(f"Yearly Spending: ${yearly_spending:.2f}")

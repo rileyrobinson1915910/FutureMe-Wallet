@@ -13,6 +13,13 @@ def get_connection():
             spending REAL
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS lessons_completed (
+            name TEXT,
+            lesson_id INTEGER,
+            PRIMARY KEY (name, lesson_id)
+        )
+    """)
     connection.commit()
     return connection, cursor
 
@@ -34,7 +41,6 @@ def insert_user(cursor, connection, name, age, income, savings, spending):
 
 
 def update_user_field(cursor, connection, name, field, new_value):
-    # field must be one of: age, income, savings, spending
     query = f"UPDATE user_info SET {field} = ? WHERE name = ?"
     cursor.execute(query, (new_value, name))
     connection.commit()
