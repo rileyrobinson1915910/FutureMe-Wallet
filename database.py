@@ -44,3 +44,11 @@ def update_user_field(cursor, connection, name, field, new_value):
     query = f"UPDATE user_info SET {field} = ? WHERE name = ?"
     cursor.execute(query, (new_value, name))
     connection.commit()
+
+def mark_lesson_complete(cursor, connection, name, lesson_id): 
+    cursor.execute(
+        "INSERT OR IGNORE INTO lessons_completed VALUES (?, ?)",
+        (name, lesson_id)
+    )
+    connection.commit()
+
