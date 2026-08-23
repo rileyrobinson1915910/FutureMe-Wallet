@@ -45,10 +45,19 @@ def update_user_field(cursor, connection, name, field, new_value):
     cursor.execute(query, (new_value, name))
     connection.commit()
 
-def mark_lesson_complete(cursor, connection, name, lesson_id): 
+
+def mark_lesson_complete(cursor, connection, name, lesson_id):
     cursor.execute(
         "INSERT OR IGNORE INTO lessons_completed VALUES (?, ?)",
         (name, lesson_id)
     )
     connection.commit()
 
+
+def get_completed_lessons(cursor, name):
+    cursor.execute(
+        "SELECT lesson_id FROM lessons_completed WHERE name = ?",
+        (name,)
+    )
+    rows = cursor.fetchall()
+    return [row[0] for row in rows]
