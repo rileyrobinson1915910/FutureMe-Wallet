@@ -8,3 +8,9 @@ LESSONS = [
     {"id": 7, "title": "Understanding Inflation", "body": "Inflation means prices rise over time, so the same amount of money buys a little less each year. $20 today won't buy what $20 bought five years ago. This matters directly for saving: if your money sits somewhere earning 0% interest while inflation rises, you're technically losing value over time, even though the number in your account never goes down. Here's why it matters so much right now: research on teen financial knowledge found that well over half of U.S. teens don't fully understand how inflation affects their actual buying power. Try it: understanding inflation is what eventually connects saving to investing, money that just sits still can quietly lose value."},
     {"id": 8, "title": "Why Starting to Invest Early Beats Investing More Later", "body": "Investing means putting money into something, like a stock or index fund, with the goal of it growing over time. The single biggest advantage a teenager has over almost anyone else in personal finance is time. Thanks to compound interest, from Lesson 2, money invested at 18 has decades longer to grow than the same amount invested at 35, often resulting in a dramatically larger outcome. Here's why it matters so much right now: waiting to invest has a real, measurable cost, not just someday vagueness, but actual lost growth that can never be fully made up later. Try it: you don't have to invest right now, you just have to know it's out there, and that the earlier version of you always has the advantage."},
 ]
+
+CATEGORY_LESSON_MAP = {
+    "Bad": 1,
+    "Okay": 5,
+    "Excellent": 8,
+}
