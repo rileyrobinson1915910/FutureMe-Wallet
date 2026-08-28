@@ -14,3 +14,6 @@ CATEGORY_LESSON_MAP = {
     "Okay": 5,
     "Excellent": 8,
 }
+
+def get_recommended_lesson(category):
+    
