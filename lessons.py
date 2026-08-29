@@ -16,4 +16,7 @@ CATEGORY_LESSON_MAP = {
 }
 
 def get_recommended_lesson(category):
-    
+    lesson_id = CATEGORY_LESSON_MAP[category]
+    for lesson in LESSONS:
+        if lesson["id"] == lesson_id:
+            return lesson
