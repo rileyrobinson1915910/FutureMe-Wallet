@@ -20,3 +20,4 @@ def get_recommended_lesson(category):
     for lesson in LESSONS:
         if lesson["id"] == lesson_id:
             return lesson
+from lessons import get_recommended_lesson

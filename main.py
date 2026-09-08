@@ -1,7 +1,8 @@
 import streamlit as st
 from calculations import calculate_future, core_calculations, health_score
 from messages import health_score_basic, score_system, financial_health_score_full
-from database import get_connection, get_user, insert_user, update_user_field
+from database import get_connection, get_user, insert_user, update_user_field, mark_lesson_complete, get_completed_lessons
+from lessons import get_recommended_lesson, LESSONS
 
 st.set_page_config(page_title="Future Me Wallet", page_icon="💰", layout="centered")
 
@@ -129,6 +130,31 @@ if spending is not None:
         st.subheader("🔮 Future Me")
         st.write(f"Category: **{category}**")
         st.write(message)
+
+        recommended_lesson = get_recommended_lesson(category)
+
+        st.divider()
+        st.subheader("📚 Recommended Lesson")
+        st.write(f"**{recommended_lesson['title']}**")
+        st.write(recommended_lesson['body'])
+
+        st.divider()
+        st.subheader("📖 All Lessons")
+
+        completed_ids = get_completed_lessons(cursor, name)
+
+        for lesson in LESSONS:
+            with st.expander(lesson["title"]):
+                st.write(lesson["body"])
+                already_done = lesson["id"] in completed_ids
+                checked = st.checkbox(
+                    "Mark as learned",
+                    value=already_done,
+                    key=f"lesson_{lesson['id']}"
+                )
+                if checked and not already_done:
+                    mark_lesson_complete(cursor, connection, name, lesson["id"])
+                    st.success("Marked as learned!")
 
         if category == "Excellent":
             st.success(
