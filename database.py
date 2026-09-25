@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import date
 
 
 def get_connection():
@@ -18,6 +19,15 @@ def get_connection():
             name TEXT,
             lesson_id INTEGER,
             PRIMARY KEY (name, lesson_id)
+        )
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS history (
+            name TEXT,
+            entry_date TEXT,
+            savings REAL,
+            spending REAL,
+            PRIMARY KEY (name, entry_date)
         )
     """)
     connection.commit()
@@ -41,6 +51,7 @@ def insert_user(cursor, connection, name, age, income, savings, spending):
 
 
 def update_user_field(cursor, connection, name, field, new_value):
+    # field must be one of: age, income, savings, spending
     query = f"UPDATE user_info SET {field} = ? WHERE name = ?"
     cursor.execute(query, (new_value, name))
     connection.commit()
@@ -61,3 +72,20 @@ def get_completed_lessons(cursor, name):
     )
     rows = cursor.fetchall()
     return [row[0] for row in rows]
+
+
+def log_history(cursor, connection, name, savings, spending):
+    today = date.today().isoformat()
+    cursor.execute(
+        "INSERT OR REPLACE INTO history VALUES (?, ?, ?, ?)",
+        (name, today, savings, spending)
+    )
+    connection.commit()
+
+
+def get_history(cursor, name):
+    cursor.execute(
+        "SELECT entry_date, savings, spending FROM history WHERE name = ? ORDER BY entry_date",
+        (name,)
+    )
+    return cursor.fetchall()

@@ -1,8 +1,9 @@
 import streamlit as st
 from calculations import calculate_future, core_calculations, health_score
 from messages import health_score_basic, score_system, financial_health_score_full
-from database import get_connection, get_user, insert_user, update_user_field, mark_lesson_complete, get_completed_lessons
+from database import get_connection, get_user, insert_user, update_user_field, mark_lesson_complete, get_completed_lessons, log_history, get_history
 from lessons import get_recommended_lesson, LESSONS
+import pandas as pd
 
 st.set_page_config(page_title="Future Me Wallet", page_icon="💰", layout="centered")
 
@@ -81,6 +82,8 @@ elif name:
 # ---------- RESULTS (shown for both new and returning users, once data is ready) ----------
 if spending is not None:
 
+    log_history(cursor, connection, name, savings, spending)
+
     age_five, age_ten = calculate_future(age)
 
     st.divider()
@@ -137,6 +140,23 @@ if spending is not None:
         st.subheader("📚 Recommended Lesson")
         st.write(f"**{recommended_lesson['title']}**")
         st.write(recommended_lesson['body'])
+
+        st.divider()
+        st.subheader("📈 Your Trend Over Time")
+
+        history = get_history(cursor, name)
+
+        if len(history) > 1:
+            dates = [row[0] for row in history]
+            savings_vals = [row[1] for row in history]
+            spending_vals = [row[2] for row in history]
+            trend_df = pd.DataFrame(
+                {"Savings": savings_vals, "Spending": spending_vals},
+                index=dates
+            )
+            st.line_chart(trend_df)
+        else:
+            st.info("Come back and update your info again to start seeing your trend over time!")
 
         st.divider()
         st.subheader("📖 All Lessons")
